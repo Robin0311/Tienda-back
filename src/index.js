@@ -29,3 +29,7 @@ app.use('/customers', require('../src/routers/customers.routers'))
 //shopping
 // localhost:5000/shopping
 app.use('/shopping', require('../src/routers/shopping.routers'))
+
+//product
+// localhost:5000/product
+app.use('/product', require('../src/routers/product.routers'))

@@ -1,5 +1,5 @@
 const Customer = require('../models/customerSchema')
-const { msgFormatConst, resApi } = require("../helpers/helpers");
+const { msgFormatConst, resApi, msjPError, msjP } = require("../helpers/helpers");
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
@@ -77,13 +77,32 @@ const loginCustomer = async (req, res) => {
 }
 
 const updateCustomers = async(req, res) => {
-  res.send("Estoy delete un usuario");
-  msgFormatConst("deleteCustomers");
+  try {
+    const resp = await Customer.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    })
+    
+      return res.json({
+        message: 'Customers updated successfully',
+        detail: resp
+      })
+      
+  } catch (e) {
+    return res.json({
+      message: 'Error',
+      detail: e
+    })
+  }
 };
 
-const deleteCustomers = (req, res) => {
-  res.send("Estoy delete un usuario");
-  msgFormatConst("deleteCustomers");
+const deleteCustomers = async(req, res) => {
+  try {
+    msjP("Delete product");
+    const customers = await Customer.findByIdAndDelete(req.params.id);
+    resApi(res, "success", customers);
+  } catch {
+    msjPError("Error Delete Product");
+  }
 };
 
 module.exports = {

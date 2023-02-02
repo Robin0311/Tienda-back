@@ -1,12 +1,19 @@
-const { msgFormatConst } = require("../helpers/helpers");
+const { msgFormatConst, resApi, msjPError  } = require("../helpers/helpers");
+const Shopping = require('../models/shoppingSchema')
 
-const getShopping = (req, res) => {
-  res.send("Estoy leyendo un compra");
-  msgFormatConst("getShopping");
+const getShopping = async(req, res) => {
+  try {
+    const Shoppings = await Shopping.find({})
+    msgFormatConst("getShopping");
+    resApi(res, 'success', Shoppings)
+    } catch {
+    msjPError("Error en la consulta");
+    }
 };
 
-const createShopping = (req, res) => {
-  res.send("Estoy creando un compra");
+const createShopping = async(req, res) => {
+  const ShoppingNew = await Shopping.create(req.body)
+  res.json(ShoppingNew)
   msgFormatConst("createShopping");
 };
 

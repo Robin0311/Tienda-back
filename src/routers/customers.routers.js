@@ -4,7 +4,8 @@ const auth = require('./../middlewares/authorization')
 const { getCustomers,createCustomer, updateCustomers, deleteCustomers, loginCustomer } = require('../controllers/customers.controllers')
 
 // localhost:5000/customers
-router.get("/", auth, getCustomers);
+router.get("/", getCustomers);
+// router.get("/", auth, getCustomers); lleva auth para autoriacion
 // localhost:5000/customers
 router.post("/", createCustomer);
 
