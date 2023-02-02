@@ -1,5 +1,7 @@
 const Customer = require('../models/customerSchema')
 const { msgFormatConst, resApi } = require("../helpers/helpers");
+const bcryptjs = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 const getCustomers = async(req, res) => {
 
@@ -16,28 +18,67 @@ const getCustomers = async(req, res) => {
 const createCustomer = async (req, res) => {
 
   try {
-  const newCustomer = await Customer.create(req.body)
-  msgFormatConst("createCustomer");
-  resApi(res, 'success', newCustomer)
-  } catch {
-    msjPError("Error en la consulta");
+    const { name, email, password } = req.body
+    const salt = await bcryptjs.genSalt(10)
+    const hasedPassword = await bcryptjs.hash(password, salt)
+    const newCustomer = await Customer.create({
+      name: name,
+      email: email,
+      password: hasedPassword
+    })
+    res.json({ msg: ' Usuario creado'})
+    
+    msgFormatConst("newCustomer");
+    // resApi(res, 'success', newCustomer)
+    } catch (error){
+    resApi(res, 'error',{
+    msg: error
+    });
   }
   
 };
 
-const updateCustomers = async(req, res) => {
-
-  const {nombre, email} = req.body
-
+const loginCustomer = async (req, res) => {
   try {
-    const updateCustomer = await Customer.findByIdAndUpdate(req.user.id, { nombre, email  }, { new: true })
-		res.json(updateCustomer)
-    } catch (error) {
-      res.status(500).json({
-        msg: 'Hubo un error actualizando la Usuario',
-      })
+   const { email, password } = req.body
+    let foundCustomer = await Customer.findOne({
+      email: email
+    })
+
+    if (!foundCustomer) {
+      return res.status(400).json({ msg : 'El cliente no esta resgistrado'})
     }
-    
+
+    const passSuccess = await bcryptjs.compare(password, foundCustomer.password)
+
+    if (!passSuccess) {
+      return await res.status(400).json({ msg : 'Password incorrecto'})
+    }
+
+    const payload = {
+      user: {
+        id: foundCustomer.id
+      }
+    }
+
+    if(email && passSuccess){
+      jwt.sign(payload, process.env.SECRET, { expiresIn: process.env.TIME_TOKEN },
+        (error, token) =>{
+          if(error) throw error
+          res.json({token: token})
+        })
+    }
+
+  } catch (error){
+    resApi(res, 'error',{
+    msg: error
+    });
+  }
+}
+
+const updateCustomers = async(req, res) => {
+  res.send("Estoy delete un usuario");
+  msgFormatConst("deleteCustomers");
 };
 
 const deleteCustomers = (req, res) => {
@@ -50,4 +91,5 @@ module.exports = {
   createCustomer,
   updateCustomers,
   deleteCustomers,
+  loginCustomer
 };
