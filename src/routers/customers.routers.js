@@ -1,11 +1,12 @@
 const { Router } = require("express");
 const router = Router();
-const { getCustomers,createCustomers, updateCustomers, deleteCustomers } = require('../controllers/customers.controllers')
+const auth = require('./../middlewares/authorization')
+const { getCustomers,createCustomer, updateCustomers, deleteCustomers } = require('../controllers/customers.controllers')
 
 // localhost:5000/customers
-router.get("/", getCustomers);
+router.get("/", auth, getCustomers);
 // localhost:5000/customers
-router.post("/", createCustomers);
+router.post("/", createCustomer);
 // localhost:5000/customers/{id}
 router.put("/:id", updateCustomers);
 // localhost:5000/customers/{id}

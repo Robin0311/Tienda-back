@@ -1,18 +1,43 @@
-const { msgFormatConst } = require("../helpers/helpers");
+const Customer = require('../models/customerSchema')
+const { msgFormatConst, resApi } = require("../helpers/helpers");
 
-const getCustomers = (req, res) => {
-  res.send("Estoy leyendo un usuario");
+const getCustomers = async(req, res) => {
+
+  try {
+  const Customers = await Customer.find({})
   msgFormatConst("getCustomers");
+  resApi(res, 'success', Customers)
+  } catch {
+  msjPError("Error en la consulta");
+  }
+
 };
 
-const createCustomers = (req, res) => {
-  res.send("Estoy creando un usuario");
-  msgFormatConst("createCustomers");
+const createCustomer = async (req, res) => {
+
+  try {
+  const newCustomer = await Customer.create(req.body)
+  msgFormatConst("createCustomer");
+  resApi(res, 'success', newCustomer)
+  } catch {
+    msjPError("Error en la consulta");
+  }
+  
 };
 
-const updateCustomers = (req, res) => {
-  res.send("Estoy update un usuario");
-  msgFormatConst("updateCustomers");
+const updateCustomers = async(req, res) => {
+
+  const {nombre, email} = req.body
+
+  try {
+    const updateCustomer = await Customer.findByIdAndUpdate(req.user.id, { nombre, email  }, { new: true })
+		res.json(updateCustomer)
+    } catch (error) {
+      res.status(500).json({
+        msg: 'Hubo un error actualizando la Usuario',
+      })
+    }
+    
 };
 
 const deleteCustomers = (req, res) => {
@@ -22,7 +47,7 @@ const deleteCustomers = (req, res) => {
 
 module.exports = {
   getCustomers,
-  createCustomers,
+  createCustomer,
   updateCustomers,
   deleteCustomers,
 };
