@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const router = Router();
-const auth = require('./../middlewares/authorization')
+// const auth = require('./../middlewares/authorization')
 const { getCustomers,createCustomer, updateCustomers, deleteCustomers, loginCustomer } = require('../controllers/customers.controllers')
 
 // localhost:5000/customers
